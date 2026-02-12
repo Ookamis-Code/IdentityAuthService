@@ -17,15 +17,17 @@ public class AuthController : ControllerBase
         jwt_Serivce = jwtService;
     }
     [HttpPost("register")]
-    public ActionResult<User> Register(string username, string password)
+    public ActionResult<User> Register(string username, string password, string role = "User")
     {
+        var valid_Roles = new List<string> { "User", "Admin", "Manager" };
+        if (!valid_Roles.Contains(role)) return BadRequest("Invalid Role.");
         auth_Service.CreatePasswordHash(password, out byte[] hash, out byte[] salt);
         var user = new User
         {
             Username = username,
             PasswordHash = hash,
             PasswordSalt = salt,
-            Role = "User"
+            Role = role
         };
         p_users.Add(user);
         return Ok("User registration successful.");
